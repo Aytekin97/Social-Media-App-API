@@ -101,21 +101,29 @@ exports.createPost = (req, res) => {
 
 exports.getPostsByUser = async (req, res) => {
   try {
-    // Fetch posts using async/await
-    const posts = await Post.find({ postedBy: req.profile._id })
-                            .populate("postedBy", "_id name")
-                            .sort("created: -1");
+    const limit = parseInt(req.query.limit) || 10; // Default limit is 10
+    const page = parseInt(req.query.page) || 1; // Default page is 1
 
-                            if (!posts || posts.length === 0) {
-                              return res.status(404).json({ error: "No posts found for this user" });
-                            }
-                        
-                            return res.status(200).json(posts); // Return the posts
-  } catch (error) {
-    console.error("Error fetching posts by user:", error);
-    return res.status(500).json({ error: "An error occurred while fetching posts" });
+    const posts = await Post.find({ postedBy: req.params.userId })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("postedBy", "_id name")
+      .sort("-created");
+
+    const totalPosts = await Post.countDocuments({ postedBy: req.params.userId });
+
+    res.status(200).json({
+      posts,
+      totalPosts,
+      totalPages: Math.ceil(totalPosts / limit),
+      currentPage: page,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch posts." });
   }
 };
+
 
 exports.postPhoto = async (req, res, next) => {
   if (req.post && req.post.photo) {
