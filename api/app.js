@@ -24,6 +24,7 @@ mongoose.connection.on('error',err=> {
 const postRoutes = require('./routes/post');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const connectionRoutes = require("./routes/connection");
 
 //get API docs
 app.get('/', async (req, res) => {
@@ -59,6 +60,7 @@ app.use(cors({
 app.use("/", postRoutes);
 app.use("/", authRoutes);
 app.use("/", userRoutes);
+app.use("/", connectionRoutes);
 
 
 app.use(function (err,req,res,next){
