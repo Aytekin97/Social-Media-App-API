@@ -41,7 +41,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParse());
 app.use(cors({
-  origin: ['http://localhost:3000'], 
+  origin: ['https://social-media-app-front-end-production.up.railway.app'], 
 }));
 
 
