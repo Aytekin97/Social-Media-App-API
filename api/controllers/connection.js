@@ -36,3 +36,20 @@ exports.createConnection = async (req, res) => {
     res.status(500).json({ error: "An error occurred while creating the connection." });
   }
 };
+
+// Get all connections for a user
+exports.getConnections = async (req, res) => {
+    try {
+      const { userId } = req.params;
+  
+      // Fetch all connections where the user is either user1 or user2
+      const connections = await Connection.find({
+        $or: [{ user1: userId }, { user2: userId }],
+      }).populate("user1 user2", "_id name email");
+  
+      res.status(200).json(connections);
+    } catch (error) {
+      console.error("Error fetching connections:", error);
+      res.status(500).json({ error: "Failed to fetch connections" });
+    }
+  };
