@@ -40,8 +40,19 @@ app.get('/', async (req, res) => {
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParse());
+
+const allowedOrigins = [
+  'https://social-media-app-front-end-production.up.railway.app',
+  'http://localhost:3000' // for local development
+];
 app.use(cors({
-  origin: ['https://social-media-app-front-end-production.up.railway.app'], 
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow request
+    } else {
+      callback(new Error('Not allowed by CORS')); // Deny request
+    }
+  },
 }));
 
 
